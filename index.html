@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corner of Story — Cozy Autumn Library</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fraunces (Display Serif), Lora (Reading Serif), Caveat (Handwritten) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <!-- Tone.js for gentle cozy paper & pop sound effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+  <style>
+    :root {
+      --bg-wood-dark: #2c1810;
+      --bg-wood-mid: #4a2c1d;
+      --bg-wood-light: #6e422b;
+      --cream-paper: #fbf5e9;
+      --cream-shadow: #eadbc1;
+      --terracotta: #c85a32;
+      --burnt-orange: #d97736;
+      --mustard-gold: #dfa43b;
+      --crimson-red: #9e2a2b;
+      --ink-brown: #3b261d;
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background-color: #26140d;
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(223, 164, 59, 0.16), transparent 60%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 14px);
+      color: #fdf6ec;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .font-display {
+      font-family: 'Fraunces', serif;
+    }
+
+    .font-handwriting {
+      font-family: 'Caveat', cursive;
+    }
+
+    /* Ambient Falling Autumn Leaves */
+    .leaf-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .falling-leaf {
+      position: absolute;
+      top: -40px;
+      opacity: 0.75;
+      animation: fallSway linear infinite;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+
+    @keyframes fallSway {
+      0% {
+        transform: translateY(-40px) translateX(0px) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.85; }
+      50% {
+        transform: translateY(50vh) translateX(35px) rotate(180deg);
+      }
+      90% { opacity: 0.75; }
+      100% {
+        transform: translateY(108vh) translateX(-25px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Fairy Lights Glow */
+    .fairy-bulb {
+      animation: twinkle 3.2s infinite ease-in-out alternate;
+    }
+    .fairy-bulb:nth-child(odd) {
+      animation-delay: 1.4s;
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.55; transform: scale(0.92); }
+      100% { opacity: 1; transform: scale(1.12); }
+    }
+
+    /* Wooden Bookshelf Styling */
+    .bookshelf-frame {
+      background: linear-gradient(180deg, #3b2014 0%, #2b160d 100%);
+      border: 10px solid #593320;
+      box-shadow: 
+        inset 0 15px 35px rgba(0,0,0,0.75),
+        0 25px 50px rgba(0,0,0,0.65);
+    }
+
+    .shelf-plank {
+      height: 22px;
+      background: linear-gradient(180deg, #7c492d 0%, #57311c 65%, #3a1f10 100%);
+      box-shadow: 
+        0 10px 18px rgba(0,0,0,0.65),
+        inset 0 2px 3px rgba(255, 224, 178, 0.22);
+      border-radius: 4px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Book Spine & Cover Standing on Shelf */
+    .shelf-book {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+      transform-origin: bottom center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .shelf-book:hover {
+      transform: translateY(-14px) scale(1.04) rotate(-1.5deg);
+      box-shadow: 0 20px 30px rgba(0,0,0,0.6), 0 0 20px rgba(223, 164, 59, 0.35);
+      z-index: 15;
+    }
+
+    .shelf-book::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 10px;
+      width: 4px;
+      background: rgba(0,0,0,0.22);
+      box-shadow: 1px 0 0 rgba(255,255,255,0.15);
+      border-radius: 2px;
+    }
+
+    .book-pages-edge {
+      background: repeating-linear-gradient(
+        90deg,
+        #f5ead6 0px,
+        #f5ead6 2px,
+        #dcc8a9 2px,
+        #dcc8a9 4px
+      );
+    }
+
+    /* Open Book Spread Styling */
+    .open-book-wrapper {
+      animation: bookOpenScale 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes bookOpenScale {
+      0% {
+        opacity: 0;
+        transform: scale(0.86) translateY(24px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .paper-page {
+      background-color: var(--cream-paper);
+      background-image: 
+        radial-gradient(rgba(139, 90, 43, 0.06) 1px, transparent 0),
+        linear-gradient(transparent 31px, rgba(168, 130, 94, 0.22) 32px);
+      background-size: 20px 20px, 100% 32px;
+      color: var(--ink-brown);
+      position: relative;
+    }
+
+    .paper-page-plain {
+      background-color: var(--cream-paper);
+      background-image: radial-gradient(rgba(139, 90, 43, 0.06) 1px, transparent 0);
+      background-size: 18px 18px;
+      color: var(--ink-brown);
+    }
+
+    .spine-crease-left {
+      background: linear-gradient(90deg, transparent 88%, rgba(62, 36, 20, 0.14) 97%, rgba(45, 24, 12, 0.28) 100%);
+    }
+
+    .spine-crease-right {
+      background: linear-gradient(270deg, transparent 88%, rgba(62, 36, 20, 0.14) 97%, rgba(45, 24, 12, 0.28) 100%);
+    }
+
+    /* TADAAA! Sticker Pop-Up Animation */
+    @keyframes stickerTadaPop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0) rotate(-28deg);
+      }
+      55% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.36) rotate(12deg);
+      }
+      75% {
+        transform: translate(-50%, -50%) scale(0.9) rotate(-6deg);
+      }
+      90% {
+        transform: translate(-50%, -50%) scale(1.08) rotate(3deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(var(--rot, 0deg));
+      }
+    }
+
+    @keyframes sparkleRing {
+      0% {
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(0.3);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.1);
+      }
+    }
+
+    .placed-sticker {
+      position: absolute;
+      transform: translate(-50%, -50%) scale(1) rotate(var(--rot, 0deg));
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      z-index: 25;
+      filter: drop-shadow(0 4px 6px rgba(59, 38, 29, 0.24));
+      transition: filter 0.2s ease;
+    }
+
+    .placed-sticker:active {
+      cursor: grabbing;
+      filter: drop-shadow(0 8px 12px rgba(59, 38, 29, 0.35)) scale(1.08);
+    }
+
+    .sticker-tada-animate {
+      animation: stickerTadaPop 0.72s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    }
+
+    .sticker-sparkle::after {
+      content: '✨';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: 1.4rem;
+      pointer-events: none;
+      animation: sparkleRing 0.75s ease-out forwards;
+    }
+
+    /* Custom Scrollbar for cozy reading */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(59, 38, 29, 0.08);
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(168, 112, 72, 0.45);
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(168, 112, 72, 0.7);
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-amber-700 selection:text-amber-50">
+
+  <!-- Ambient Falling Autumn Leaves Background -->
+  <div id="leafContainer" class="leaf-container" aria-hidden="true"></div>
+
+  <!-- Top Header & Fairy Lights -->
+  <header class="relative z-10 pt-4 pb-2 px-4 max-w-6xl mx-auto">
+    <!-- Decorative String Lights -->
+    <div class="flex justify-between items-center px-4 mb-3 opacity-90" aria-hidden="true">
+      <div class="h-[2px] flex-1 bg-amber-900/60"></div>
+      <div class="flex gap-5 sm:gap-9 px-3">
+        <span class="fairy-bulb w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_12px_#fcd34d]"></span>
+        <span class="fairy-bulb w-2.5 h-2.5 rounded-full bg-orange-400 shadow-[0_0_12px_#fb923c]"></span>
+        <span class="fairy-bulb w-2.5 h-2.5 rounded-full bg-yellow-200 shadow-[0_0_12px_#fef08a]"></span>
+        <span class="fairy-bulb w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_12px_#fbbf24]"></span>
+        <span class="fairy-bulb w-2.5 h-2.5 rounded-full bg-orange-300 shadow-[0_0_12px_#fdba74]"></span>
+        <span class="fairy-bulb w-2.5 h-2.5 rounded-full bg-amber-200 shadow-[0_0_12px_#fde68a] hidden sm:inline-block"></span>
+      </div>
+      <div class="h-[2px] flex-1 bg-amber-900/60"></div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#361d12]/80 backdrop-blur-md border border-amber-800/40 rounded-2xl px-5 py-3.5 shadow-xl">
+      <div class="flex items-center gap-3 text-center sm:text-left">
+        <!-- Warm Candle & Book SVG Emblem -->
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-700/30 border border-amber-500/30 flex items-center justify-center shrink-0">
+          <svg class="w-7 h-7 text-amber-300" viewBox="0 0 36 36" fill="none">
+            <path d="M6 27C6 25.3431 7.34315 24 9 24H27C28.6569 24 30 25.3431 30 27V29C30 30.1046 29.1046 31 28 31H8C6.89543 31 6 30.1046 6 29V27Z" fill="#D97736"/>
+            <path d="M8 21C8 19.8954 8.89543 19 10 19H26C27.1046 19 28 19.8954 28 21V24H8V21Z" fill="#FBF5E9"/>
+            <rect x="16" y="11" width="4" height="8" rx="1" fill="#FDE68A"/>
+            <path d="M18 4C18 4 21 7.5 21 9.5C21 11.1569 19.6569 12.5 18 12.5C16.3431 12.5 15 11.1569 15 9.5C15 7.5 18 4 18 4Z" fill="#F59E0B"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-display text-2xl sm:text-3xl font-bold tracking-tight text-amber-100">
+            Corner of Story
+          </h1>
+          <p class="text-xs sm:text-sm text-amber-200/75 italic">
+            Perpustakaan kecil penuh cerita hangat, catatan rahasia & stiker kejutan
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="soundToggleBtn" onclick="toggleSound()" class="px-3.5 py-2 rounded-xl bg-amber-950/80 hover:bg-amber-900/80 text-amber-200 border border-amber-700/50 text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm" title="Suara Efek Halaman & Stiker">
+          <span id="soundIcon">🔔</span>
+          <span id="soundLabel">Suara Aktif</span>
+        </button>
+        <button id="backToShelfBtn" onclick="closeBook()" class="hidden px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-500 hover:to-orange-600 text-amber-50 font-semibold text-xs sm:text-sm items-center gap-1.5 transition shadow-md">
+          <span>←</span>
+          <span>Kembali ke Rak</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="relative z-10 max-w-6xl mx-auto px-4 py-5">
+
+    <!-- VIEW 1: BOOKSHELF VIEW -->
+    <section id="bookshelfView" class="transition-all duration-500">
+      <div class="text-center mb-5">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-amber-900/50 border border-amber-700/40 text-amber-200 text-xs sm:text-sm">
+          ✨ Klik salah satu buku di rak untuk membaca atau menuliskan ceritamu sendiri
+        </span>
+      </div>
+
+      <!-- Wooden Bookshelf Container -->
+      <div class="bookshelf-frame rounded-3xl p-5 sm:p-8 relative">
+        
+        <!-- Shelf Row 1: Featured Books -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 items-end pt-4 px-2 sm:px-4">
+          <!-- Books will be dynamically rendered here -->
+          <div id="booksGrid" class="contents"></div>
+        </div>
+
+        <!-- Wooden Plank 1 -->
+        <div class="shelf-plank w-full mt-0 mb-8"></div>
+
+        <!-- Shelf Row 2: Cozy Decorations & Reading Corner Info -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 px-4 pt-2 pb-1">
+          <!-- Decorative Autumn Mug & Pumpkin SVG -->
+          <div class="flex items-end gap-4">
+            <!-- Steaming Pumpkin Spice Mug -->
+            <div class="relative flex flex-col items-center" title="Secangkir teh kayu manis hangat">
+              <div class="flex gap-1.5 mb-1 opacity-70">
+                <span class="w-1 h-4 bg-amber-100/60 rounded-full animate-pulse"></span>
+                <span class="w-1 h-5 bg-amber-100/50 rounded-full animate-pulse" style="animation-delay: 0.4s"></span>
+              </div>
+              <svg class="w-14 h-14" viewBox="0 0 64 64" fill="none">
+                <path d="M46 26H51C54.3137 26 57 28.6863 57 32V36C57 39.3137 54.3137 42 51 42H46" stroke="#D97736" stroke-width="5" stroke-linecap="round"/>
+                <rect x="12" y="20" width="34" height="32" rx="8" fill="#C85A32"/>
+                <rect x="12" y="20" width="34" height="8" rx="4" fill="#E88D5A"/>
+                <circle cx="29" cy="37" r="6" fill="#FBF5E9" fill-opacity="0.85"/>
+                <path d="M29 33V41M25 37H33" stroke="#9E2A2B" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <!-- Cozy Autumn Pumpkin -->
+            <svg class="w-14 h-14" viewBox="0 0 64 64" fill="none">
+              <path d="M32 14C32 10 35 7 38 7" stroke="#5C7A3E" stroke-width="4" stroke-linecap="round"/>
+              <ellipse cx="22" cy="36" rx="11" ry="16" fill="#D97736"/>
+              <ellipse cx="42" cy="36" rx="11" ry="16" fill="#D97736"/>
+              <ellipse cx="32" cy="36" rx="12" ry="17" fill="#E88A3E"/>
+              <path d="M32 19V53" stroke="#B85A1E" stroke-width="2" stroke-opacity="0.45"/>
+            </svg>
+
+            <!-- Mini Stacked Books -->
+            <div class="hidden sm:flex flex-col items-center">
+              <div class="w-24 h-4 rounded-l-md bg-[#9e2a2b] border-r-4 border-[#f5ead6] shadow"></div>
+              <div class="w-28 h-5 rounded-l-md bg-[#dfa43b] border-r-4 border-[#f5ead6] shadow"></div>
+              <div class="w-32 h-5 rounded-l-md bg-[#5e3a24] border-r-4 border-[#f5ead6] shadow"></div>
+            </div>
+          </div>
+
+          <!-- Cozy Library Note Plaque -->
+          <div class="bg-[#24120a]/85 border border-amber-700/40 rounded-2xl p-4 max-w-md text-center md:text-right shadow-inner">
+            <p class="font-handwriting text-2xl text-amber-300 leading-tight">
+              "Setiap halaman menyimpan kehangatan cerita..."
+            </p>
+            <p class="text-xs text-amber-200/70 mt-1">
+              Semua tulisan & stiker yang kamu tempel tersimpan otomatis di browser ini. Coba buka ulang bukunya untuk melihat stiker muncul <span class="text-amber-300 font-semibold">tadaaa! ✨</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Wooden Plank 2 -->
+        <div class="shelf-plank w-full mt-1"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: OPEN BOOK VIEW -->
+    <section id="openBookView" class="hidden">
+      <div class="open-book-wrapper">
+        
+        <!-- Book Top Action Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4 bg-[#361d12]/90 border border-amber-800/50 rounded-2xl px-4 py-3 shadow-lg">
+          <div class="flex items-center gap-3">
+            <span id="activeBookBadge" class="text-2xl">🍂</span>
+            <div>
+              <h2 id="activeBookTitle" class="font-display text-xl sm:text-2xl font-bold text-amber-100">Judul Buku</h2>
+              <p id="activeBookSubtitle" class="text-xs text-amber-200/75">Tema Buku</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="replayStickersAnimation()" class="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40 text-xs sm:text-sm font-medium flex items-center gap-1.5 transition active:scale-95">
+              <span>✨</span>
+              <span>Replay Stiker (Tadaaa!)</span>
+            </button>
+            <button id="toggleWriteBtn" onclick="openWriteMode()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-[#c85a32] to-[#9e2a2b] hover:brightness-110 text-amber-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition shadow-md active:scale-95">
+              <span>✍️</span>
+              <span>+ Tulis Cerita Baru</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Realistic Two-Page Book Spread -->
+        <div id="bookCoverOuter" class="p-2.5 sm:p-4 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.75)] transition-colors duration-500 bg-[#7c3f27]">
+          <div class="grid grid-cols-1 lg:grid-cols-2 rounded-2xl overflow-hidden shadow-inner bg-[#fbf5e9]">
+            
+            <!-- LEFT PAGE: Story Index & Note List -->
+            <div class="paper-page-plain spine-crease-left p-5 sm:p-7 flex flex-col justify-between min-h-[460px] lg:min-h-[560px] border-b lg:border-b-0 lg:border-r border-amber-900/20">
+              <div>
+                <div class="flex items-center justify-between border-b-2 border-amber-900/15 pb-3 mb-4">
+                  <div>
+                    <span class="text-[11px] uppercase tracking-widest text-amber-800/70 font-semibold">Daftar Catatan</span>
+                    <h3 class="font-display text-xl font-bold text-[#3b261d]">Lembar Cerita Pembaca</h3>
+                  </div>
+                  <span id="noteCountBadge" class="px-2.5 py-1 rounded-full bg-amber-900/10 text-amber-900 text-xs font-semibold">
+                    0 cerita
+                  </span>
+                </div>
+
+                <!-- List of Entries in This Book -->
+                <div id="entriesList" class="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+              <!-- Left Page Bottom Decorative Quote & Quick Add -->
+              <div class="mt-6 pt-3 border-t border-amber-900/15 flex items-center justify-between text-xs text-amber-900/70">
+                <span class="italic">Pilih catatan untuk dibaca & dihias stiker</span>
+                <button onclick="openWriteMode()" class="font-semibold text-[#c85a32] hover:underline">
+                  + Tambah halaman
+                </button>
+              </div>
+            </div>
+
+            <!-- RIGHT PAGE: Active Story Reading / Writing + Interactive Sticker Canvas -->
+            <div id="rightPageContainer" class="paper-page spine-crease-right p-5 sm:p-7 flex flex-col justify-between min-h-[500px] lg:min-h-[560px] relative overflow-hidden">
+              
+              <!-- Sticker Layer (Placed stickers appear here and pop out with TADAAA!) -->
+              <div id="stickerCanvasLayer" class="absolute inset-0 pointer-events-none z-20">
+                <!-- Stickers injected here -->
+              </div>
+
+              <!-- MODE A: READING MODE -->
+              <div id="readingModeArea" class="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                  <!-- Entry Header -->
+                  <div class="flex items-start justify-between gap-2 border-b border-amber-900/20 pb-3 mb-4">
+                    <div>
+                      <div class="flex items-center gap-2 text-xs text-amber-800/80 mb-1">
+                        <span id="readAuthor" class="font-semibold bg-amber-900/10 px-2.5 py-0.5 rounded-full">Penulis</span>
+                        <span>•</span>
+                        <span id="readDate">Tanggal</span>
+                      </div>
+                      <h3 id="readTitle" class="font-display text-2xl sm:text-3xl font-bold text-[#3b261d] leading-snug">
+                        Judul Cerita
+                      </h3>
+                    </div>
+
+                    <button id="deleteNoteBtn" onclick="deleteCurrentNote()" class="hidden text-xs px-2.5 py-1 rounded-lg bg-red-900/10 hover:bg-red-900/20 text-red-800 transition" title="Hapus catatan ini">
+                      Hapus
+                    </button>
+                  </div>
+
+                  <!-- Entry Body -->
+                  <div id="readBody" class="text-[15px] sm:text-base leading-[32px] text-[#3b261d] whitespace-pre-line font-normal pr-2 min-h-[210px]">
+                    Isi cerita akan muncul di sini...
+                  </div>
+                </div>
+
+                <!-- Interactive Sticker Tray for This Book Theme -->
+                <div class="mt-6 pt-3 border-t-2 border-dashed border-amber-900/20 relative z-30 bg-[#fbf5e9]/90 backdrop-blur-xs rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-900/80 flex items-center gap-1.5">
+                      <span>🎨</span> Tempel Stiker Tema Ini (Klik untuk Tadaaa!):
+                    </span>
+                    <button onclick="clearPageStickers()" class="text-[11px] text-amber-900/60 hover:text-red-700 underline">
+                      Bersihkan Stiker
+                    </button>
+                  </div>
+
+                  <!-- Curated Theme Stickers -->
+                  <div id="stickerPalette" class="flex flex-wrap items-center gap-2">
+                    <!-- Rendered dynamically per book theme -->
+                  </div>
+                  <p class="text-[11px] text-amber-900/65 mt-1.5">
+                    💡 Tips: Geser stiker di halaman untuk memindahkannya, klik ganda pada stiker untuk menghapusnya, atau tutup & buka ulang buku ini untuk melihat efek <strong class="text-amber-900">tadaaa!</strong>
+                  </p>
+                </div>
+              </div>
+
+              <!-- MODE B: WRITING NEW NOTE MODE -->
+              <div id="writingModeArea" class="hidden relative z-30 flex flex-col h-full justify-between bg-[#fbf5e9]/95 rounded-xl">
+                <div>
+                  <div class="flex items-center justify-between border-b border-amber-900/20 pb-2.5 mb-4">
+                    <h3 class="font-display text-xl font-bold text-[#3b261d]">✍️ Tulis Catatan Baru</h3>
+                    <button onclick="cancelWriteMode()" class="text-xs px-3 py-1 rounded-lg bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 font-medium">
+                      Batal
+                    </button>
+                  </div>
+
+                  <form id="newNoteForm" onsubmit="saveNewNote(event)" class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-xs font-semibold text-amber-900/80 mb-1">Nama Penulis</label>
+                        <input type="text" id="inputAuthor" required maxlength="30" placeholder="Misal: Senja, Kinan..."
+                          class="w-full px-3 py-2 rounded-xl bg-white/80 border border-amber-900/25 text-sm text-[#3b261d] focus:outline-none focus:border-[#c85a32]" />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-amber-900/80 mb-1">Judul Catatan</label>
+                        <input type="text" id="inputTitle" required maxlength="50" placeholder="Misal: Hujan di Bulan November"
+                          class="w-full px-3 py-2 rounded-xl bg-white/80 border border-amber-900/25 text-sm text-[#3b261d] focus:outline-none focus:border-[#c85a32]" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-semibold text-amber-900/80 mb-1">Isi Cerita / Catatanmu</label>
+                      <textarea id="inputBody" required rows="6" maxlength="900" placeholder="Tuangkan pikiran, puisi singkat, atau cerita hangatmu di sini..."
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-white/80 border border-amber-900/25 text-sm leading-relaxed text-[#3b261d] focus:outline-none focus:border-[#c85a32]"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                      <button type="button" onclick="cancelWriteMode()" class="px-4 py-2 rounded-xl border border-amber-900/25 text-xs sm:text-sm text-amber-900 hover:bg-amber-900/10">
+                        Kembali
+                      </button>
+                      <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-[#c85a32] to-[#9e2a2b] text-amber-50 font-semibold text-xs sm:text-sm shadow-md hover:brightness-110 transition">
+                        Simpan ke Buku 📖
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification (No alert() used!) -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-[#2c1810] border border-amber-500/50 text-amber-100 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-sm">
+      <span id="toastIcon">✨</span>
+      <span id="toastMessage">Pesan notifikasi</span>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ==========================================
+     * 1. DATA & THEME CONFIGURATION
+     * ==========================================
+     */
+    const STORAGE_KEY = 'corner_of_story_library_v1';
+
+    const BOOKS_DATA = [
+      {
+        id: 'autumn-breeze',
+        title: 'Autumn Breeze',
+        subtitle: 'Jejak Daun & Angin Sore',
+        themeName: 'Autumn Theme',
+        coverGradient: 'from-[#c85a32] via-[#b04622] to-[#7d2e14]',
+        outerFrameColor: '#8c3b1e',
+        accentBadge: '🍂',
+        spineIcons: ['🍁', '🎃', '🌰'],
+        stickers: [
+          { id: 'maple', label: 'Daun Maple', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M32 6L37 19L49 15L44 27L56 32L43 38L46 48L34 44V58H30V44L18 48L21 38L8 32L20 27L15 15L27 19L32 6Z" fill="#D95D24" stroke="#7C2D12" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+          { id: 'pumpkin', label: 'Labu Hangat', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M32 14C32 10 35 7 39 7" stroke="#4D7C0F" stroke-width="4" stroke-linecap="round"/><ellipse cx="21" cy="36" rx="11" ry="16" fill="#EA580C"/><ellipse cx="43" cy="36" rx="11" ry="16" fill="#EA580C"/><ellipse cx="32" cy="36" rx="12" ry="17" fill="#F97316" stroke="#9A3412" stroke-width="2"/></svg>` },
+          { id: 'acorn', label: 'Biji Ek', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M18 28C18 44 25 54 32 56C39 54 46 44 46 28H18Z" fill="#D97706" stroke="#78350F" stroke-width="2.5"/><path d="M14 26C14 19 22 15 32 15C42 15 50 19 50 26C50 29 14 29 14 26Z" fill="#78350F"/><path d="M32 15V9" stroke="#78350F" stroke-width="4" stroke-linecap="round"/></svg>` },
+          { id: 'sweater', label: 'Sweter Rajut', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M22 14L10 24L15 32L20 28V52H44V28L49 32L54 24L42 14H37C36 18 28 18 27 14H22Z" fill="#B45309" stroke="#451A03" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 34H44M20 41H44" stroke="#FDE68A" stroke-width="2.5" stroke-dasharray="4 3"/></svg>` },
+          { id: 'mushroom', label: 'Jamur Hutan', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M26 34H38L40 52H24L26 34Z" fill="#FEF3C7" stroke="#78350F" stroke-width="2.5"/><path d="M12 34C12 20 21 12 32 12C43 12 52 20 52 34H12Z" fill="#DC2626" stroke="#7F1D1D" stroke-width="2.5"/><circle cx="24" cy="24" r="3" fill="#FEF3C7"/><circle cx="38" cy="22" r="3.5" fill="#FEF3C7"/><circle cx="31" cy="29" r="2.5" fill="#FEF3C7"/></svg>` }
+        ],
+        defaultNotes: [
+          {
+            id: 'note-aut-1',
+            author: 'Nadira',
+            title: 'Sore di Bangku Taman',
+            date: '14 Nov 2026',
+            body: 'Angin sore ini membawa wangi tanah basah dan daun kering yang gugur perlahan. Rasanya seperti dunia melambat sejenak, memberi ruang bagi kita untuk menarik napas panjang dan mensyukuri hal-hal kecil yang sering terlewat.',
+            isDefault: true,
+            stickers: [
+              { uid: 'st-1', stickerId: 'maple', x: 82, y: 18, rot: 14 },
+              { uid: 'st-2', stickerId: 'acorn', x: 16, y: 74, rot: -12 }
+            ]
+          },
+          {
+            id: 'note-aut-2',
+            author: 'Raka',
+            title: 'Catatan Sweter Cokelat',
+            date: '16 Nov 2026',
+            body: 'Ada kenyamanan aneh saat memakai sweter lama sambil mendengarkan suara rintik hujan di kaca jendela. Semoga siapa pun yang membaca halaman ini selalu menemukan kehangatan di tengah hari yang dingin.',
+            isDefault: true,
+            stickers: [
+              { uid: 'st-3', stickerId: 'pumpkin', x: 80, y: 72, rot: 8 }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'sweet-crumbs',
+        title: 'Sweet Crumbs',
+        subtitle: 'Aroma Roti & Kopi Pagi',
+        themeName: 'Bakery Theme',
+        coverGradient: 'from-[#d99b52] via-[#b87735] to-[#7c491d]',
+        outerFrameColor: '#9c622b',
+        accentBadge: '🥐',
+        spineIcons: ['🥐', '🧁', '☕'],
+        stickers: [
+          { id: 'croissant', label: 'Croissant Hangat', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M14 40C10 34 14 22 24 20C28 16 36 16 40 20C50 22 54 34 50 40C46 44 40 42 38 38C34 41 30 41 26 38C24 42 18 44 14 40Z" fill="#D97706" stroke="#78350F" stroke-width="2.5"/><path d="M24 20L26 38M40 20L38 38" stroke="#78350F" stroke-width="2"/></svg>` },
+          { id: 'cupcake', label: 'Cupcake Krim', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M18 34H46L42 52H22L18 34Z" fill="#F59E0B" stroke="#78350F" stroke-width="2.5"/><path d="M15 34C15 26 22 20 32 20C42 20 49 26 49 34H15Z" fill="#FFFBEB" stroke="#92400E" stroke-width="2.5"/><circle cx="32" cy="16" r="4.5" fill="#DC2626"/></svg>` },
+          { id: 'coffee', label: 'Kopi Latte', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M44 26H49C52 26 54 28 54 31V34C54 37 52 39 49 39H44" stroke="#78350F" stroke-width="4" stroke-linecap="round"/><rect x="16" y="22" width="28" height="26" rx="6" fill="#FDE68A" stroke="#78350F" stroke-width="2.5"/><path d="M25 14C25 11 27 11 27 8M33 14C33 11 35 11 35 8" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+          { id: 'cinnamon', label: 'Cinnamon Roll', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><circle cx="32" cy="34" r="18" fill="#D97706" stroke="#78350F" stroke-width="2.5"/><path d="M32 34C32 31 35 29 38 31C41 33 40 39 35 41C29 43 23 38 24 31C25 23 34 20 41 24" fill="none" stroke="#FEF3C7" stroke-width="3" stroke-linecap="round"/></svg>` },
+          { id: 'pretzel', label: 'Pretzel Manis', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M22 44C14 44 12 32 20 26C28 20 36 32 44 44C52 44 52 32 44 26C36 20 28 32 20 44" fill="none" stroke="#B45309" stroke-width="5" stroke-linecap="round"/></svg>` }
+        ],
+        defaultNotes: [
+          {
+            id: 'note-bak-1',
+            author: 'Clara',
+            title: 'Toko Roti di Sudut Jalan',
+            date: '15 Nov 2026',
+            body: 'Pukul tujuh pagi adalah waktu terbaik melewati toko roti tua itu. Aroma mentega panggang dan kayu manis langsung menyapa dari balik pintu kayu, seolah bilang bahwa hari ini akan berjalan manis.',
+            isDefault: true,
+            stickers: [
+              { uid: 'st-b1', stickerId: 'croissant', x: 84, y: 20, rot: -10 },
+              { uid: 'st-b2', stickerId: 'coffee', x: 18, y: 72, rot: 10 }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'crimson-tales',
+        title: 'Crimson Tales',
+        subtitle: 'Surat Merah & Bunga Mawar',
+        themeName: 'Red / Scarlet Theme',
+        coverGradient: 'from-[#a82428] via-[#85191d] to-[#540d10]',
+        outerFrameColor: '#7a181c',
+        accentBadge: '🌹',
+        spineIcons: ['🌹', '🍒', '💌'],
+        stickers: [
+          { id: 'rose', label: 'Mawar Merah', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M32 34V54" stroke="#15803D" stroke-width="3.5" stroke-linecap="round"/><path d="M32 44L41 39" stroke="#15803D" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="24" r="13" fill="#DC2626" stroke="#7F1D1D" stroke-width="2.5"/><path d="M26 24C26 20 32 18 35 22C38 26 32 31 28 28" fill="none" stroke="#FCA5A5" stroke-width="2" stroke-linecap="round"/></svg>` },
+          { id: 'cherry', label: 'Ceri Manis', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M22 42C24 28 32 18 40 14C38 24 40 34 44 42" fill="none" stroke="#166534" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="45" r="8" fill="#B91C1C" stroke="#7F1D1D" stroke-width="2"/><circle cx="44" cy="45" r="8" fill="#DC2626" stroke="#7F1D1D" stroke-width="2"/></svg>` },
+          { id: 'waxseal', label: 'Segel Lilin Merah', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><circle cx="32" cy="32" r="18" fill="#991B1B" stroke="#7F1D1D" stroke-width="3"/><circle cx="32" cy="32" r="12" fill="none" stroke="#FCA5A5" stroke-width="1.5" stroke-dasharray="3 2"/><path d="M32 38C32 38 24 33 24 28.5C24 26 26 24.5 28 24.5C29.8 24.5 31.2 25.6 32 27C32.8 25.6 34.2 24.5 36 24.5C38 24.5 40 26 40 28.5C40 33 32 38 32 38Z" fill="#FECACA"/></svg>` },
+          { id: 'ribbon', label: 'Pita Scarlet', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M32 30L16 18V42L32 30ZM32 30L48 18V42L32 30Z" fill="#DC2626" stroke="#7F1D1D" stroke-width="2.5" stroke-linejoin="round"/><path d="M28 32L20 50M36 32L44 50" stroke="#B91C1C" stroke-width="4" stroke-linecap="round"/><circle cx="32" cy="30" r="5" fill="#991B1B"/></svg>` },
+          { id: 'redvelvet', label: 'Kue Red Velvet', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M14 46H50V30L14 22V46Z" fill="#B91C1C" stroke="#7F1D1D" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 34H50" stroke="#FFFBEB" stroke-width="4"/><circle cx="32" cy="21" r="4" fill="#DC2626"/></svg>` }
+        ],
+        defaultNotes: [
+          {
+            id: 'note-red-1',
+            author: 'Alya',
+            title: 'Surat Tanpa Alamat',
+            date: '17 Nov 2026',
+            body: 'Beberapa perasaan memang lebih indah disimpan di antara halaman buku tua daripada diucapkan terburu-buru. Seperti kelopak mawar yang dikeringkan, warnanya tetap tinggal meski musim berganti.',
+            isDefault: true,
+            stickers: [
+              { uid: 'st-r1', stickerId: 'waxseal', x: 83, y: 22, rot: -8 },
+              { uid: 'st-r2', stickerId: 'rose', x: 16, y: 74, rot: 12 }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'golden-hour',
+        title: 'Golden Hour',
+        subtitle: 'Cahaya Senja & Teh Madu',
+        themeName: 'Golden Amber Theme',
+        coverGradient: 'from-[#dfa43b] via-[#c28321] to-[#87560e]',
+        outerFrameColor: '#9c6816',
+        accentBadge: '✨',
+        spineIcons: ['☀️', '🍯', '🕯️'],
+        stickers: [
+          { id: 'sun', label: 'Mentari Senja', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><circle cx="32" cy="32" r="13" fill="#F59E0B" stroke="#92400E" stroke-width="2.5"/><path d="M32 10V15M32 49V54M10 32H15M49 32H54M17 17L20 20M44 44L47 47M47 17L44 20M20 44L17 47" stroke="#D97706" stroke-width="3" stroke-linecap="round"/></svg>` },
+          { id: 'candle', label: 'Lilin Aromaterapi', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><rect x="22" y="26" width="20" height="26" rx="4" fill="#FEF3C7" stroke="#92400E" stroke-width="2.5"/><path d="M32 10C32 10 37 16 37 19.5C37 22.2 34.8 24.5 32 24.5C29.2 24.5 27 22.2 27 19.5C27 16 32 10 32 10Z" fill="#F59E0B"/></svg>` },
+          { id: 'honey', label: 'Guci Madu', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><rect x="18" y="22" width="28" height="30" rx="10" fill="#F59E0B" stroke="#78350F" stroke-width="2.5"/><rect x="21" y="16" width="22" height="7" rx="3" fill="#FEF3C7" stroke="#78350F" stroke-width="2"/></svg>` },
+          { id: 'star', label: 'Bintang Hangat', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><path d="M32 10L38.5 23.5L53 25.5L42.5 35.8L45 50.2L32 43.3L19 50.2L21.5 35.8L11 25.5L25.5 23.5L32 10Z" fill="#FBBF24" stroke="#92400E" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+          { id: 'teapot', label: 'Teko Teh', svg: `<svg viewBox="0 0 64 64" class="w-12 h-12"><circle cx="32" cy="36" r="14" fill="#D97706" stroke="#78350F" stroke-width="2.5"/><path d="M18 34L10 28M46 32C51 32 53 36 50 40L45 42" stroke="#78350F" stroke-width="3.5" stroke-linecap="round"/><circle cx="32" cy="20" r="3.5" fill="#FBBF24"/></svg>` }
+        ],
+        defaultNotes: [
+          {
+            id: 'note-gold-1',
+            author: 'Dimas',
+            title: 'Lima Menit Sebelum Gelap',
+            date: '18 Nov 2026',
+            body: 'Sinar matahari keemasan yang masuk lewat celah tirai selalu membuat kamar terasa seperti lukisan klasik. Waktu terbaik untuk menyeduh teh madu dan menuliskan mimpi-mimpi baru.',
+            isDefault: true,
+            stickers: [
+              { uid: 'st-g1', stickerId: 'sun', x: 83, y: 19, rot: 10 },
+              { uid: 'st-g2', stickerId: 'candle', x: 17, y: 74, rot: -6 }
+            ]
+          }
+        ]
+      }
+    ];
+
+    /**
+     * ==========================================
+     * 2. APPLICATION STATE & LOCALSTORAGE
+     * ==========================================
+     */
+    let libraryState = {};
+    let activeBookId = null;
+    let activeNoteId = null;
+    let soundEnabled = true;
+
+    function initLibraryData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          libraryState = JSON.parse(saved);
+        } else {
+          // Initialize from default BOOKS_DATA
+          BOOKS_DATA.forEach(book => {
+            libraryState[book.id] = JSON.parse(JSON.stringify(book.defaultNotes));
+          });
+          saveLibraryData();
+        }
+      } catch (e) {
+        console.error('Error loading localStorage:', e);
+        BOOKS_DATA.forEach(book => {
+          libraryState[book.id] = JSON.parse(JSON.stringify(book.defaultNotes));
+        });
+      }
+    }
+
+    function saveLibraryData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(libraryState));
+      } catch (e) {
+        console.error('Error saving to localStorage:', e);
+      }
+    }
+
+    /**
+     * ==========================================
+     * 3. COZY SOUND EFFECTS (TONE.JS)
+     * ==========================================
+     */
+    let synth = null;
+    function playCozySound(type) {
+      if (!soundEnabled || typeof Tone === 'undefined') return;
+      try {
+        if (Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        if (!synth) {
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.01, decay: 0.18, sustain: 0.05, release: 0.3 }
+          }).toDestination();
+          synth.volume.value = -12;
+        }
+
+        const now = Tone.now();
+        if (type === 'openBook') {
+          synth.triggerAttackRelease(['C4', 'E4', 'G4'], '16n', now);
+          synth.triggerAttackRelease(['B4'], '8n', now + 0.09);
+        } else if (type === 'tada') {
+          // Cheerful little pop chime!
+          synth.triggerAttackRelease(['G5'], '32n', now);
+          synth.triggerAttackRelease(['C6'], '16n', now + 0.06);
+        } else if (type === 'save') {
+          synth.triggerAttackRelease(['F4', 'A4', 'C5'], '8n', now);
+        }
+      } catch (err) {
+        // Ignore audio context restrictions if not interacted yet
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundIcon').textContent = soundEnabled ? '🔔' : '🔕';
+      document.getElementById('soundLabel').textContent = soundEnabled ? 'Suara Aktif' : 'Suara Mati';
+      showToast(soundEnabled ? 'Suara efek diaktifkan' : 'Suara efek dimatikan', soundEnabled ? '🔔' : '🔕');
+    }
+
+    /**
+     * ==========================================
+     * 4. AMBIENT AUTUMN LEAVES GENERATOR
+     * ==========================================
+     */
+    function createFallingLeaves() {
+      const container = document.getElementById('leafContainer');
+      const leafSVGs = [
+        `<svg width="24" height="24" viewBox="0 0 24 24" fill="#d97736"><path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/></svg>`,
+        `<svg width="22" height="22" viewBox="0 0 24 24" fill="#c85a32"><path d="M12,2L14.5,8.5L21,7L18,13L22,16L15.5,18.5L17,22L12,19.5L7,22L8.5,18.5L2,16L6,13L3,7L9.5,8.5L12,2Z"/></svg>`,
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="#dfa43b"><path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/></svg>`
+      ];
+
+      for (let i = 0; i < 14; i++) {
+        const leaf = document.createElement('div');
+        leaf.className = 'falling-leaf';
+        leaf.innerHTML = leafSVGs[i % leafSVGs.length];
+        leaf.style.left = `${Math.random() * 96}%`;
+        leaf.style.animationDuration = `${11 + Math.random() * 10}s`;
+        leaf.style.animationDelay = `${Math.random() * 10}s`;
+        container.appendChild(leaf);
+      }
+    }
+
+    /**
+     * ==========================================
+     * 5. BOOKSHELF RENDERING
+     * ==========================================
+     */
+    function renderBookshelf() {
+      const grid = document.getElementById('booksGrid');
+      grid.innerHTML = '';
+
+      BOOKS_DATA.forEach(book => {
+        const notes = libraryState[book.id] || [];
+        const totalStickers = notes.reduce((acc, n) => acc + (n.stickers ? n.stickers.length : 0), 0);
+
+        const bookCard = document.createElement('div');
+        bookCard.className = 'flex flex-col items-center group';
+        bookCard.innerHTML = `
+          <div onclick="openBook('${book.id}')" 
+               class="shelf-book w-44 sm:w-48 h-60 sm:h-64 rounded-r-2xl rounded-l-md bg-gradient-to-br ${book.coverGradient} p-4 flex flex-col justify-between shadow-[8px_12px_24px_rgba(0,0,0,0.65)] border-t border-white/20">
+            
+            <!-- Top Decorative Spine Label -->
+            <div class="pl-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] uppercase tracking-widest text-amber-100/80 font-semibold bg-black/25 px-2 py-0.5 rounded-full">
+                  ${book.themeName.split(' ')[0]}
+                </span>
+                <span class="text-xl drop-shadow">${book.accentBadge}</span>
+              </div>
+
+              <h3 class="font-display text-xl sm:text-2xl font-bold text-amber-50 mt-3 leading-tight drop-shadow-sm">
+                ${book.title}
+              </h3>
+              <p class="text-[11px] text-amber-100/85 mt-1 italic">
+                ${book.subtitle}
+              </p>
+            </div>
+
+            <!-- Theme Icons Emblem -->
+            <div class="pl-2 my-auto flex items-center justify-center gap-2.5 bg-black/20 py-2.5 px-3 rounded-xl border border-white/10">
+              ${book.spineIcons.map(ic => `<span class="text-xl transform group-hover:scale-110 transition">${ic}</span>`).join('')}
+            </div>
+
+            <!-- Bottom Story Counter & Page Edge Illusion -->
+            <div class="pl-2">
+              <div class="flex items-center justify-between text-[11px] text-amber-100/90 font-medium mb-1.5">
+                <span>📖 ${notes.length} cerita</span>
+                <span>✨ ${totalStickers} stiker</span>
+              </div>
+              <div class="book-pages-edge h-2 w-full rounded-r-sm opacity-90"></div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(bookCard);
+      });
+    }
+
+    /**
+     * ==========================================
+     * 6. OPEN BOOK, NAVIGATION & NOTES LOGIC
+     * ==========================================
+     */
+    function openBook(bookId) {
+      activeBookId = bookId;
+      const bookMeta = BOOKS_DATA.find(b => b.id === bookId);
+      const notes = libraryState[bookId] || [];
+
+      playCozySound('openBook');
+
+      // Switch views
+      document.getElementById('bookshelfView').classList.add('hidden');
+      document.getElementById('openBookView').classList.remove('hidden');
+      const backBtn = document.getElementById('backToShelfBtn');
+      backBtn.classList.remove('hidden');
+      backBtn.classList.add('flex');
+
+      // Set Book Header & Cover Frame Color
+      document.getElementById('activeBookBadge').textContent = bookMeta.accentBadge;
+      document.getElementById('activeBookTitle').textContent = bookMeta.title;
+      document.getElementById('activeBookSubtitle').textContent = `${bookMeta.subtitle} • ${bookMeta.themeName}`;
+      document.getElementById('bookCoverOuter').style.backgroundColor = bookMeta.outerFrameColor;
+
+      // Render Sticker Palette for this book
+      renderStickerPalette(bookMeta);
+
+      // Select first note by default
+      if (notes.length > 0) {
+        activeNoteId = notes[0].id;
+      } else {
+        activeNoteId = null;
+      }
+
+      cancelWriteMode(false);
+      renderEntriesList();
+      renderActiveNote(true); // true = trigger TADAAA animation!
+    }
+
+    function closeBook() {
+      activeBookId = null;
+      activeNoteId = null;
+
+      document.getElementById('openBookView').classList.add('hidden');
+      document.getElementById('bookshelfView').classList.remove('hidden');
+      const backBtn = document.getElementById('backToShelfBtn');
+      backBtn.classList.add('hidden');
+      backBtn.classList.remove('flex');
+
+      renderBookshelf();
+    }
+
+    function renderEntriesList() {
+      const listContainer = document.getElementById('entriesList');
+      const notes = libraryState[activeBookId] || [];
+      document.getElementById('noteCountBadge').textContent = `${notes.length} cerita`;
+
+      listContainer.innerHTML = '';
+
+      if (notes.length === 0) {
+        listContainer.innerHTML = `
+          <div class="text-center py-8 text-amber-900/60 text-sm italic">
+            Belum ada catatan di buku ini. Jadilah penulis pertama!
+          </div>
+        `;
+        return;
+      }
+
+      notes.forEach((note, idx) => {
+        const isSelected = note.id === activeNoteId;
+        const stickerCount = note.stickers ? note.stickers.length : 0;
+
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.onclick = () => {
+          activeNoteId = note.id;
+          cancelWriteMode(false);
+          renderEntriesList();
+          renderActiveNote(true); // Trigger TADAAA pop-up when switching page!
+        };
+
+        item.className = `w-full text-left p-3.5 rounded-xl border transition-all flex items-start justify-between gap-2 ${
+          isSelected
+            ? 'bg-[#f2e2c6] border-[#c85a32] shadow-sm ring-1 ring-[#c85a32]/40'
+            : 'bg-white/55 hover:bg-white/85 border-amber-900/15'
+        }`;
+
+        item.innerHTML = `
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 text-[11px] text-amber-900/70 mb-0.5">
+              <span class="font-bold text-[#9e2a2b]">#${idx + 1}</span>
+              <span class="truncate font-semibold">${escapeHTML(note.author)}</span>
+              <span>•</span>
+              <span>${escapeHTML(note.date)}</span>
+            </div>
+            <h4 class="font-display font-bold text-base text-[#3b261d] truncate">
+              ${escapeHTML(note.title)}
+            </h4>
+            <p class="text-xs text-amber-950/75 line-clamp-1 mt-0.5">
+              ${escapeHTML(note.body)}
+            </p>
+          </div>
+          ${stickerCount > 0 ? `<span class="shrink-0 text-xs bg-amber-900/10 text-amber-900 px-2 py-0.5 rounded-full font-medium">✨ ${stickerCount}</span>` : ''}
+        `;
+
+        listContainer.appendChild(item);
+      });
+    }
+
+    function renderActiveNote(triggerTadaAnimation = true) {
+      const notes = libraryState[activeBookId] || [];
+      const note = notes.find(n => n.id === activeNoteId);
+
+      const deleteBtn = document.getElementById('deleteNoteBtn');
+      const stickerLayer = document.getElementById('stickerCanvasLayer');
+
+      if (!note) {
+        document.getElementById('readAuthor').textContent = 'Kosong';
+        document.getElementById('readDate').textContent = '-';
+        document.getElementById('readTitle').textContent = 'Halaman Kosong';
+        document.getElementById('readBody').textContent = 'Klik tombol "+ Tulis Cerita Baru" untuk mulai mengisi buku ini.';
+        deleteBtn.classList.add('hidden');
+        stickerLayer.innerHTML = '';
+        return;
+      }
+
+      document.getElementById('readAuthor').textContent = `✍️ ${note.author}`;
+      document.getElementById('readDate').textContent = note.date;
+      document.getElementById('readTitle').textContent = note.title;
+      document.getElementById('readBody').textContent = note.body;
+
+      // Show delete button for user-created notes
+      if (!note.isDefault) {
+        deleteBtn.classList.remove('hidden');
+      } else {
+        deleteBtn.classList.add('hidden');
+      }
+
+      // Render Stickers with staggered TADAAA! animation
+      renderPlacedStickers(note, triggerTadaAnimation);
+    }
+
+    /**
+     * ==========================================
+     * 7. INTERACTIVE STICKERS & TADAAA! ANIMATION
+     * ==========================================
+     */
+    function renderStickerPalette(bookMeta) {
+      const palette = document.getElementById('stickerPalette');
+      palette.innerHTML = '';
+
+      bookMeta.stickers.forEach(st => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => addStickerToCurrentNote(st.id);
+        btn.title = `Tempel stiker: ${st.label}`;
+        btn.className = 'p-2 rounded-xl bg-white/80 hover:bg-amber-100 border border-amber-900/20 hover:border-[#c85a32] shadow-xs hover:scale-110 active:scale-95 transition flex flex-col items-center gap-0.5';
+        btn.innerHTML = `
+          <div class="w-9 h-9 flex items-center justify-center pointer-events-none">${st.svg}</div>
+          <span class="text-[10px] font-medium text-amber-950/80">${st.label.split(' ')[0]}</span>
+        `;
+        palette.appendChild(btn);
+      });
+    }
+
+    function addStickerToCurrentNote(stickerId) {
+      const notes = libraryState[activeBookId] || [];
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note) {
+        showToast('Buka atau tulis catatan dulu sebelum menempel stiker!', '📝');
+        return;
+      }
+
+      if (!note.stickers) note.stickers = [];
+
+      // Place at a nice semi-random spot on the right page so they don't all stack identically
+      const randomX = Math.floor(22 + Math.random() * 62); // 22% - 84%
+      const randomY = Math.floor(22 + Math.random() * 48); // 22% - 70%
+      const randomRot = Math.floor(-18 + Math.random() * 36);
+
+      const newSticker = {
+        uid: 'st-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        stickerId: stickerId,
+        x: randomX,
+        y: randomY,
+        rot: randomRot
+      };
+
+      note.stickers.push(newSticker);
+      saveLibraryData();
+      renderEntriesList();
+      renderPlacedStickers(note, false, newSticker.uid);
+      playCozySound('tada');
+    }
+
+    function renderPlacedStickers(note, animateAll = true, animateSingleUid = null) {
+      const layer = document.getElementById('stickerCanvasLayer');
+      layer.innerHTML = '';
+
+      const bookMeta = BOOKS_DATA.find(b => b.id === activeBookId);
+      if (!bookMeta || !note.stickers || note.stickers.length === 0) return;
+
+      if (animateAll && note.stickers.length > 0) {
+        playCozySound('tada');
+      }
+
+      note.stickers.forEach((stItem, index) => {
+        const stickerDef = bookMeta.stickers.find(s => s.id === stItem.stickerId);
+        if (!stickerDef) return;
+
+        const el = document.createElement('div');
+        const shouldPop = animateAll || (animateSingleUid === stItem.uid);
+
+        el.className = `placed-sticker pointer-events-auto ${shouldPop ? 'sticker-tada-animate sticker-sparkle' : ''}`;
+        el.style.left = `${stItem.x}%`;
+        el.style.top = `${stItem.y}%`;
+        el.style.setProperty('--rot', `${stItem.rot}deg`);
+
+        // Staggered delay so stickers pop out one-by-one: tadaaa... tadaaa... tadaaa!
+        if (animateAll) {
+          el.style.animationDelay = `${0.15 + index * 0.14}s`;
+        }
+
+        el.innerHTML = stickerDef.svg;
+        el.title = 'Geser untuk memindah • Klik ganda untuk menghapus';
+
+        // Double click to remove sticker
+        el.addEventListener('dblclick', (e) => {
+          e.stopPropagation();
+          note.stickers = note.stickers.filter(s => s.uid !== stItem.uid);
+          saveLibraryData();
+          renderEntriesList();
+          renderPlacedStickers(note, false);
+          showToast('Stiker dilepas dari halaman', '🍃');
+        });
+
+        // Drag / Touch move support to reposition sticker freely on page
+        makeStickerDraggable(el, stItem, note);
+
+        layer.appendChild(el);
+      });
+    }
+
+    function replayStickersAnimation() {
+      const notes = libraryState[activeBookId] || [];
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note || !note.stickers || note.stickers.length === 0) {
+        showToast('Belum ada stiker di halaman ini. Coba tempel satu dulu!', '🎨');
+        return;
+      }
+      renderPlacedStickers(note, true);
+      showToast('Tadaaa! Stiker bermunculan ✨', '✨');
+    }
+
+    function clearPageStickers() {
+      const notes = libraryState[activeBookId] || [];
+      const note = notes.find(n => n.id === activeNoteId);
+      if (!note || !note.stickers || note.stickers.length === 0) return;
+
+      note.stickers = [];
+      saveLibraryData();
+      renderEntriesList();
+      renderPlacedStickers(note, false);
+      showToast('Semua stiker di halaman ini dibersihkan', '🧹');
+    }
+
+    function makeStickerDraggable(el, stItem, note) {
+      let isDragging = false;
+      const container = document.getElementById('rightPageContainer');
+
+      const onStart = (clientX, clientY) => {
+        isDragging = true;
+        el.classList.remove('sticker-tada-animate', 'sticker-sparkle');
+      };
+
+      const onMove = (clientX, clientY) => {
+        if (!isDragging) return;
+        const rect = container.getBoundingClientRect();
+        let pctX = ((clientX - rect.left) / rect.width) * 100;
+        let pctY = ((clientY - rect.top) / rect.height) * 100;
+
+        // Clamp inside page bounds
+        pctX = Math.max(8, Math.min(92, pctX));
+        pctY = Math.max(8, Math.min(82, pctY));
+
+        stItem.x = Math.round(pctX * 10) / 10;
+        stItem.y = Math.round(pctY * 10) / 10;
+
+        el.style.left = `${stItem.x}%`;
+        el.style.top = `${stItem.y}%`;
+      };
+
+      const onEnd = () => {
+        if (isDragging) {
+          isDragging = false;
+          saveLibraryData();
+        }
+      };
+
+      // Mouse events
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        onStart(e.clientX, e.clientY);
+      });
+      window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+      window.addEventListener('mouseup', onEnd);
+
+      // Touch events for mobile
+      el.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          onStart(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+      window.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches.length === 1) {
+          onMove(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+      window.addEventListener('touchend', onEnd);
+    }
+
+    /**
+     * ==========================================
+     * 8. WRITING & DELETING NOTES
+     * ==========================================
+     */
+    function openWriteMode() {
+      document.getElementById('readingModeArea').classList.add('hidden');
+      document.getElementById('stickerCanvasLayer').classList.add('hidden');
+      document.getElementById('writingModeArea').classList.remove('hidden');
+      document.getElementById('inputAuthor').focus();
+    }
+
+    function cancelWriteMode(reRender = true) {
+      document.getElementById('writingModeArea').classList.add('hidden');
+      document.getElementById('readingModeArea').classList.remove('hidden');
+      document.getElementById('stickerCanvasLayer').classList.remove('hidden');
+      if (reRender) renderActiveNote(false);
+    }
+
+    function saveNewNote(event) {
+      event.preventDefault();
+      const author = document.getElementById('inputAuthor').value.trim() || 'Anonim';
+      const title = document.getElementById('inputTitle').value.trim() || 'Tanpa Judul';
+      const body = document.getElementById('inputBody').value.trim();
+
+      if (!body) return;
+
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      const newNote = {
+        id: 'note-' + Date.now(),
+        author,
+        title,
+        date: dateStr,
+        body,
+        isDefault: false,
+        stickers: []
+      };
+
+      if (!libraryState[activeBookId]) {
+        libraryState[activeBookId] = [];
+      }
+
+      libraryState[activeBookId].unshift(newNote);
+      activeNoteId = newNote.id;
+
+      saveLibraryData();
+      document.getElementById('newNoteForm').reset();
+
+      cancelWriteMode(false);
+      renderEntriesList();
+      renderActiveNote(true);
+      playCozySound('save');
+      showToast('Ceritamu berhasil disimpan! Sekarang hias dengan stiker ✨', '📖');
+    }
+
+    function deleteCurrentNote() {
+      const notes = libraryState[activeBookId] || [];
+      const idx = notes.findIndex(n => n.id === activeNoteId);
+      if (idx === -1) return;
+
+      notes.splice(idx, 1);
+      activeNoteId = notes.length > 0 ? notes[0].id : null;
+
+      saveLibraryData();
+      renderEntriesList();
+      renderActiveNote(true);
+      showToast('Catatan berhasil dihapus dari buku', '🗑️');
+    }
+
+    /**
+     * ==========================================
+     * 9. UTILITIES (TOAST & HTML ESCAPE)
+     * ==========================================
+     */
+    let toastTimeout = null;
+    function showToast(msg, icon = '✨') {
+      const box = document.getElementById('toastBox');
+      document.getElementById('toastMessage').textContent = msg;
+      document.getElementById('toastIcon').textContent = icon;
+
+      box.classList.remove('translate-y-20', 'opacity-0');
+      box.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        box.classList.add('translate-y-20', 'opacity-0');
+        box.classList.remove('translate-y-0', 'opacity-100');
+      }, 3200);
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize App on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initLibraryData();
+      createFallingLeaves();
+      renderBookshelf();
+    });
+  </script>
+</body>
+</html>
